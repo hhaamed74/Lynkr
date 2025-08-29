@@ -114,7 +114,7 @@ It includes posting, stories, reactions, comments, messaging, notifications, use
 
 ## 🚀 Demo
 
-👉 [Click here to try Lynkr](https://lynkr.vercel.app)
+👉 [Click here to try Lynkr](https://lynkr-three.vercel.app/)
 
 ## 📸 Screenshots
 
