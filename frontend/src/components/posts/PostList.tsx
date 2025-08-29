@@ -3,18 +3,20 @@ import { useEffect, useMemo, useState } from "react";
 import { CreatePostModal } from "./CreatePostModal";
 import { PostGrid } from "./PostGrid";
 import { pushNotification } from "../../utils/notify";
-import { db, type Post } from "../../utils/db"; // ✅ هنستخدم Post بس
+import { db, type Post } from "../../utils/db";
 import "../../styles/components/_posts.scss";
+import { useTranslation } from "react-i18next";
 
 export default function PostList({ searchTerm }: { searchTerm: string }) {
-  const [visibleCount, setVisibleCount] = useState(6);
-  const [showModal, setShowModal] = useState(false);
-  const [extraPosts, setExtraPosts] = useState<Post[]>([]);
-  const [text, setText] = useState("");
-  const [media, setMedia] = useState<string | null>(null);
-  const [url, setUrl] = useState("");
+  const [visibleCount, setVisibleCount] = useState(6); // Number of posts visible initially
+  const [showModal, setShowModal] = useState(false); // Modal state for creating post
+  const [extraPosts, setExtraPosts] = useState<Post[]>([]); // Posts saved in IndexedDB
+  const [text, setText] = useState(""); // Post content (text)
+  const [media, setMedia] = useState<string | null>(null); // Uploaded media (image/video)
+  const [url, setUrl] = useState(""); // Media URL
+  const { t } = useTranslation();
 
-  // ✅ dummy posts (برضو من نوع Post)
+  // ✅ Generate dummy posts for demo (not stored in DB)
   const posts: Post[] = useMemo(() => {
     return Array.from({ length: 12 }, (_, i) => ({
       id: i + 1,
@@ -29,7 +31,7 @@ export default function PostList({ searchTerm }: { searchTerm: string }) {
     }));
   }, []);
 
-  // ✅ تحميل البوستات من IndexedDB عند فتح الصفحة
+  // ✅ Load posts from IndexedDB when component mounts
   useEffect(() => {
     const load = async () => {
       const stored = await db.posts.toArray();
@@ -38,7 +40,7 @@ export default function PostList({ searchTerm }: { searchTerm: string }) {
     load();
   }, []);
 
-  // ✅ إضافة بوست جديد في IndexedDB
+  // ✅ Add a new post (saved into IndexedDB)
   const handleAddPost = async () => {
     if (!text.trim() && !media && !url.trim()) return;
 
@@ -55,19 +57,21 @@ export default function PostList({ searchTerm }: { searchTerm: string }) {
       currentUser: "Hamed",
     };
 
-    const id = await db.posts.add(newPost); // Dexie هيولد id
+    // Dexie will auto-generate an ID
+    const id = await db.posts.add(newPost);
     const saved = await db.posts.get(id);
     if (saved) {
       setExtraPosts((prev) => [saved, ...prev]);
     }
 
-    pushNotification("New post created ✨", "success");
+    pushNotification(t("Posts.Created", "New post created ✨"), "success");
     setText("");
     setMedia(null);
     setUrl("");
     setShowModal(false);
   };
 
+  // ✅ Combine dummy posts + DB posts and filter by search term
   const allPosts: Post[] = [...extraPosts, ...posts];
   const filtered = allPosts.filter((p) =>
     p.content.toLowerCase().includes(searchTerm.toLowerCase())
@@ -75,12 +79,14 @@ export default function PostList({ searchTerm }: { searchTerm: string }) {
 
   return (
     <div>
+      {/* Create Post button */}
       <div style={{ textAlign: "center", marginBottom: 20 }}>
         <button onClick={() => setShowModal(true)} className="btn-primary">
-          + Create Post
+          {t("PostList.CreatePost", "Create Post")}
         </button>
       </div>
 
+      {/* Create Post Modal */}
       <CreatePostModal
         open={showModal}
         onClose={() => setShowModal(false)}
@@ -100,16 +106,17 @@ export default function PostList({ searchTerm }: { searchTerm: string }) {
         onSubmit={handleAddPost}
       />
 
+      {/* Render posts in a grid */}
       <PostGrid posts={filtered.slice(0, visibleCount)} />
 
-      {/* ✅ Load More button */}
+      {/* Load More button */}
       {visibleCount < filtered.length && (
         <div style={{ textAlign: "center", marginTop: 20 }}>
           <button
             onClick={() => setVisibleCount((prev) => prev + 6)}
             className="btn-secondary"
           >
-            Load More
+            {t("PostList.LoadMore", "Load More")}
           </button>
         </div>
       )}

@@ -3,6 +3,7 @@ import { ThemeContext } from "../context/ThemeContext";
 import { useToasts } from "../hooks/useToasts";
 import type { ToastItem } from "../hooks/useToasts";
 import "../styles/layout/_notifications.scss";
+import { useTranslation } from "react-i18next";
 
 interface Notification {
   id: number;
@@ -13,12 +14,13 @@ interface Notification {
 }
 
 const Notifications: React.FC = () => {
+  const { t } = useTranslation();
   const { darkMode } = useContext(ThemeContext);
   const { toasts, showToast } = useToasts();
 
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
-  // 🔁 helper آمن للتحميل من localStorage
+  // Safely load notifications from localStorage
   const loadFromStorage = (): Notification[] => {
     try {
       return JSON.parse(
@@ -30,29 +32,28 @@ const Notifications: React.FC = () => {
   };
 
   useEffect(() => {
-    // أول تحميل
+    // Initial load
     setNotifications(loadFromStorage());
 
-    // ✅ لو في تحديثات جاية من تاب/كومبوننت تانية
     const refresh = () => setNotifications(loadFromStorage());
 
-    // storage (يفيد بين التابات وبعض السيناريوهات)
+    // Sync updates between tabs and components
     window.addEventListener("storage", refresh);
 
-    // حدث مخصص من نفس التاب (بيتعمل dispatch من saveNotifications/pushNotification)
+    // Custom event for same-tab updates
     const onLocalUpdate = () => refresh();
     window.addEventListener(
       "notifications:updated",
       onLocalUpdate as EventListener
     );
 
-    // BroadcastChannel لمزامنة فورية بين التابات
+    // BroadcastChannel for real-time cross-tab sync
     let bc: BroadcastChannel | null = null;
     try {
       bc = new BroadcastChannel("lynkr_notifications");
       bc.onmessage = () => refresh();
     } catch {
-      // ممكن المتصفح ما يدعمهوش — عادي
+      // ignore if not supported
     }
 
     return () => {
@@ -65,17 +66,19 @@ const Notifications: React.FC = () => {
     };
   }, []);
 
-  // ✅ احفظ + بثّ إشعارات التحديث (محلي + بين التابات) + fallback
+  // Save notifications and broadcast updates (local + cross-tab)
   const saveNotifications = (data: Notification[]) => {
     setNotifications(data);
     localStorage.setItem("notifications", JSON.stringify(data));
 
     const unread = data.filter((n) => !n.read).length;
 
+    // Custom event for local components
     window.dispatchEvent(
       new CustomEvent("notifications:updated", { detail: { unread } })
     );
 
+    // BroadcastChannel for other tabs
     try {
       const bc = new BroadcastChannel("lynkr_notifications");
       bc.postMessage({ unread });
@@ -84,28 +87,31 @@ const Notifications: React.FC = () => {
       // ignore
     }
 
+    // Fallback sync event
     window.dispatchEvent(new Event("storage"));
   };
 
+  // Mark a specific notification as read
   const markAsRead = (id: number) => {
     const updated = notifications.map((n) =>
       n.id === id ? { ...n, read: true } : n
     );
     saveNotifications(updated);
-    showToast("Marked as read ✅");
+    showToast(t("Notifications.MarkedAsRead", "Marked as read ✅"));
   };
 
+  // Clear all notifications
   const clearAll = () => {
     saveNotifications([]);
-    showToast("All notifications cleared 🗑️");
+    showToast(t("Notifications.ClearedAll", "All notifications cleared 🗑️"));
   };
 
   return (
     <div className={`notifications-page ${darkMode ? "dark" : "light"}`}>
-      <h2>Notifications</h2>
+      <h2>{t("Notifications.Title", "Notifications")}</h2>
 
       {notifications.length === 0 ? (
-        <p className="empty">No notifications</p>
+        <p className="empty">{t("Notifications.Empty", "No notifications")}</p>
       ) : (
         <>
           <ul className="notifications-list">
@@ -120,7 +126,9 @@ const Notifications: React.FC = () => {
                 <div className="meta">
                   <span className="time">{n.createdAt}</span>
                   {!n.read && (
-                    <button onClick={() => markAsRead(n.id)}>Mark Read</button>
+                    <button onClick={() => markAsRead(n.id)}>
+                      {t("Notifications.MarkRead", "Mark Read")}
+                    </button>
                   )}
                 </div>
               </li>
@@ -128,12 +136,14 @@ const Notifications: React.FC = () => {
           </ul>
 
           <div className="actions">
-            <button onClick={clearAll}>Clear All</button>
+            <button onClick={clearAll}>
+              {t("Notifications.ClearAll", "Clear All")}
+            </button>
           </div>
         </>
       )}
 
-      {/* Toasts Display */}
+      {/* Toasts container */}
       <div className="toast-container">
         {toasts.map((t: ToastItem) => (
           <div key={t.id} className="toast">

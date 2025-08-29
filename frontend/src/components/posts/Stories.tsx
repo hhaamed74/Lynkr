@@ -8,6 +8,7 @@ import AddStoryModal from "./AddStoryModal";
 import ShinyButton from "../common/ShinyButton";
 import "../../styles/components/_story.scss";
 import { pushNotification } from "../../utils/notify"; // 🛎️
+import { useTranslation } from "react-i18next";
 
 export interface Story {
   id: number;
@@ -19,6 +20,8 @@ export interface Story {
 }
 
 const Stories: React.FC = () => {
+  const { t } = useTranslation();
+
   const { darkMode } = useContext(ThemeContext);
 
   // localStorage hooks
@@ -160,7 +163,7 @@ const Stories: React.FC = () => {
   return (
     <div className={`stories-thumbnails ${darkMode ? "dark" : "light"}`}>
       <ShinyButton onClick={() => setAddStoryModal(true)}>
-        + Add Story
+        {t("Stories.Add Story")}
       </ShinyButton>
 
       {addStoryModal && (

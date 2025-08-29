@@ -6,7 +6,8 @@
     "Profile": "Profile",
     "Settings": "Settings",
     "Logout": "Logout",
-    "SearchPlaceholder": "Search…"
+    "SearchPlaceholder": "Search…",
+    "Account": "Account"
   },
   "ShinyButton": {
     "AddNewStory": "Add New Story",
@@ -16,7 +17,7 @@
     "AvatarURL": "Avatar URL",
     "Image": "Image",
     "Video": "Video",
-    "AddStory": "Add Story"
+    "+ Add Story": "+ Add Story"
   },
   "PostCard": {
     "Public": "Public 🌍",
@@ -58,7 +59,8 @@
     "Close": "✕",
     "WhatsOnYourMind": "What's on your mind?",
     "PasteMediaURL": "Paste image or video URL",
-    "Post": "Post"
+    "Post": "Post",
+    "LoadMore": "Load More"
   },
   "Stories": {
     "Add New Story": "Add New Story",
@@ -68,7 +70,8 @@
     "Avatar URL": "Avatar URL",
     "Image": "Image",
     "Video": "Video",
-    "Add Story": "Add Story"
+    "Add Story": "Add Story",
+    "Reply...": "Reply..."
   },
   "Login": {
     "WelcomeBack": "Welcome back",
@@ -124,14 +127,29 @@
     "Online": "Online",
     "Offline": "Offline",
     "LoadOlderMessages": "Load Older Messages",
-    "TypeReply": "Type a reply...",
+    "DeletedMessage": "Message deleted",
     "Typing": "Typing...",
     "TypeMessage": "Type a message...",
     "Send": "Send",
-    "ReactionsEmojis": ["👍", "❤️", "😂", "😮", "😢", "😡"],
-    "MessageActions": {
-      "Edit": "Edit",
-      "Delete": "Delete"
+    "FileTooLarge": "File too large!",
+    "OlderMessage": "This is an older message",
+    "Yesterday": "Yesterday",
+    "SentMessage": "You sent a message to {{name}} ✉️",
+    "SentFile": "You sent a {{kind}} to {{name}} 📎",
+    "Image": "image",
+    "Audio": "audio",
+    "Video": "video",
+    "File": "file",
+    "Edit": "Edit",
+    "Delete": "Delete",
+    "TypeReply": "TypeReply",
+    "SettingsKeys": {
+      "enableNotifications": "Enable Notifications",
+      "darkMode": "Dark Mode",
+      "showTypingIndicator": "Show Typing Indicator",
+      "showReactions": "Show Reactions",
+      "autoScroll": "Auto Scroll",
+      "showDeletedMessages": "Show Deleted Messages"
     }
   },
   "Profile": {
@@ -177,5 +195,18 @@
       "NewPasswordsDoNotMatch": "New passwords do not match!",
       "PasswordUpdated": "Password updated successfully!"
     }
+  },
+  "Badges": {
+    "Active": "🔥 Active",
+    "TopMember": "⭐ Top Member",
+    "EarlyUser": "🎯 Early User"
+  },
+  "Notifications": {
+    "Title": "Notifications",
+    "Empty": "No notifications",
+    "MarkRead": "Mark Read",
+    "ClearAll": "Clear All",
+    "MarkedAsRead": "Marked as read ✅",
+    "ClearedAll": "All notifications cleared 🗑️"
   }
 }

@@ -4,7 +4,8 @@ import { useToasts } from "../hooks/useToasts";
 import type { ToastItem } from "../hooks/useToasts";
 import "../styles/layout/_settings.scss";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { pushNotification } from "../utils/notify"; // 🛎️ جديد
+import { pushNotification } from "../utils/notify";
+import { useTranslation } from "react-i18next";
 
 interface User {
   id: number;
@@ -21,6 +22,7 @@ interface User {
 }
 
 const Settings: React.FC = () => {
+  const { t } = useTranslation();
   const { darkMode } = useContext(ThemeContext);
   const { toasts, showToast } = useToasts();
 
@@ -49,6 +51,7 @@ const Settings: React.FC = () => {
     confirm: "",
   });
 
+  // Load user from localStorage once
   useEffect(() => {
     const user = JSON.parse(
       localStorage.getItem("currentUser") || "null"
@@ -56,6 +59,7 @@ const Settings: React.FC = () => {
     if (user) setCurrentUser(user);
   }, []);
 
+  // Sync profile form with currentUser
   useEffect(() => {
     if (currentUser) {
       setProfileData({
@@ -72,10 +76,10 @@ const Settings: React.FC = () => {
     }
   }, [currentUser]);
 
+  // Save profile changes
   const handleProfileSave = () => {
     if (!currentUser) return;
 
-    // حددنا إيه اللي اتغير للنوتيفي
     const changed: string[] = [];
     (Object.keys(profileData) as (keyof typeof profileData)[]).forEach(
       (key) => {
@@ -98,28 +102,31 @@ const Settings: React.FC = () => {
       localStorage.setItem("users_demo", JSON.stringify(users));
     }
 
-    showToast("Profile updated successfully!");
+    showToast(t("Settings.ToastMessages.ProfileUpdated"));
     pushNotification(
-      `Profile updated${changed.length ? ` (${changed.join(", ")})` : ""} ✅`,
+      `${t("Settings.ToastMessages.ProfileUpdated")}${
+        changed.length ? ` (${changed.join(", ")})` : ""
+      }`,
       "success"
     );
   };
 
+  // Save new password
   const handlePasswordSave = () => {
     if (!currentUser) return;
 
     if (passwordData.current !== currentUser.password) {
-      showToast("Current password is incorrect!");
+      showToast(t("Settings.ToastMessages.CurrentPasswordIncorrect"));
       pushNotification(
-        "Password update failed: wrong current password ❌",
+        t("Settings.ToastMessages.CurrentPasswordIncorrect"),
         "error"
       );
       return;
     }
     if (passwordData.newPass !== passwordData.confirm) {
-      showToast("New passwords do not match!");
+      showToast(t("Settings.ToastMessages.NewPasswordsDoNotMatch"));
       pushNotification(
-        "Password update failed: passwords do not match ❌",
+        t("Settings.ToastMessages.NewPasswordsDoNotMatch"),
         "error"
       );
       return;
@@ -141,17 +148,18 @@ const Settings: React.FC = () => {
       localStorage.setItem("users_demo", JSON.stringify(users));
     }
 
-    showToast("Password updated successfully!");
-    pushNotification("Password updated successfully 🔒", "success");
+    showToast(t("Settings.ToastMessages.PasswordUpdated"));
+    pushNotification(t("Settings.ToastMessages.PasswordUpdated"), "success");
     setPasswordData({ current: "", newPass: "", confirm: "" });
   };
 
-  if (!currentUser)
+  if (!currentUser) {
     return (
       <div className={`settings-page ${darkMode ? "dark" : "light"}`}>
-        Loading...
+        {t("Settings.Loading")}
       </div>
     );
+  }
 
   return (
     <div
@@ -159,13 +167,13 @@ const Settings: React.FC = () => {
         darkMode ? "dark" : "light"
       } animate-settings`}
     >
-      <h2>Settings</h2>
+      <h2>{t("Settings.Settings")}</h2>
 
       {/* Profile Settings */}
       <div className="settings-card">
-        <h3>Profile Settings</h3>
+        <h3>{t("Settings.ProfileSettings")}</h3>
         <div className="form-group">
-          <label>Full Name</label>
+          <label>{t("Settings.FullName")}</label>
           <input
             type="text"
             value={profileData.fullName}
@@ -175,7 +183,7 @@ const Settings: React.FC = () => {
           />
         </div>
         <div className="form-group">
-          <label>Username</label>
+          <label>{t("Settings.Username")}</label>
           <input
             type="text"
             value={profileData.username}
@@ -185,7 +193,7 @@ const Settings: React.FC = () => {
           />
         </div>
         <div className="form-group">
-          <label>Email</label>
+          <label>{t("Settings.Email")}</label>
           <input
             type="email"
             value={profileData.email}
@@ -195,7 +203,7 @@ const Settings: React.FC = () => {
           />
         </div>
         <div className="form-group">
-          <label>Phone</label>
+          <label>{t("Profile.Phone")}</label>
           <input
             type="text"
             value={profileData.phone}
@@ -205,7 +213,7 @@ const Settings: React.FC = () => {
           />
         </div>
         <div className="form-group">
-          <label>Date of Birth</label>
+          <label>{t("Profile.DOB")}</label>
           <input
             type="date"
             value={profileData.dob}
@@ -215,20 +223,20 @@ const Settings: React.FC = () => {
           />
         </div>
         <div className="form-group">
-          <label>Gender</label>
+          <label>{t("Profile.Gender")}</label>
           <select
             value={profileData.gender}
             onChange={(e) =>
               setProfileData({ ...profileData, gender: e.target.value })
             }
           >
-            <option value="">Select...</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
+            <option value="">{t("Register.PreferNotToSay")}</option>
+            <option value="male">{t("Register.Male")}</option>
+            <option value="female">{t("Register.Female")}</option>
           </select>
         </div>
         <div className="form-group">
-          <label>Bio</label>
+          <label>{t("Settings.Bio")}</label>
           <textarea
             value={profileData.bio}
             onChange={(e) =>
@@ -237,7 +245,7 @@ const Settings: React.FC = () => {
           />
         </div>
         <div className="form-group">
-          <label>Avatar URL</label>
+          <label>{t("Settings.AvatarURL")}</label>
           <input
             type="text"
             value={profileData.avatar}
@@ -247,7 +255,7 @@ const Settings: React.FC = () => {
           />
         </div>
         <div className="form-group">
-          <label>Cover URL</label>
+          <label>{t("Settings.CoverURL")}</label>
           <input
             type="text"
             value={profileData.cover}
@@ -258,7 +266,7 @@ const Settings: React.FC = () => {
         </div>
         <div className="form-actions">
           <button className="btn-save" onClick={handleProfileSave}>
-            Save Profile
+            {t("Settings.SaveProfile")}
           </button>
           <button
             className="btn-cancel"
@@ -280,22 +288,22 @@ const Settings: React.FC = () => {
               showToast("Changes have been reset!");
             }}
           >
-            Reset Changes
+            {t("Profile.Cancel")}
           </button>
         </div>
       </div>
 
       {/* Account Security */}
       <div className="settings-card">
-        <h3>Account Security</h3>
+        <h3>{t("Settings.AccountSecurity")}</h3>
         {["current", "newPass", "confirm"].map((field) => (
           <div className="form-group password-group" key={field}>
             <label>
               {field === "current"
-                ? "Current Password"
+                ? t("Settings.CurrentPassword")
                 : field === "newPass"
-                ? "New Password"
-                : "Confirm New Password"}
+                ? t("Settings.NewPassword")
+                : t("Settings.ConfirmNewPassword")}
             </label>
             <div className="password-input">
               <input
@@ -327,11 +335,11 @@ const Settings: React.FC = () => {
           </div>
         ))}
         <button className="btn-save" onClick={handlePasswordSave}>
-          Update Password
+          {t("Settings.UpdatePassword")}
         </button>
       </div>
 
-      {/* Toasts Display */}
+      {/* Toasts */}
       <div className="toast-container">
         {toasts.map((t: ToastItem) => (
           <div key={t.id} className="toast">

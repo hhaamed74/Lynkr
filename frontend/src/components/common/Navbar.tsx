@@ -1,6 +1,6 @@
 import { useState, useContext, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "../../styles/layout/_navbar.scss";
+import "../../styles/components/_navbar.scss";
 import {
   FaHome,
   FaFacebookMessenger,
@@ -359,9 +359,9 @@ const Navbar: React.FC<NavbarProps> = ({
                 }}
                 aria-haspopup="menu"
                 aria-expanded={menuOpen}
-                title="Account"
+                title={t("Navbar.Account")}
               >
-                {displayName || "Account"}
+                {displayName || t("Navbar.Account")}
               </button>
 
               {menuOpen && (

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import type { Story } from "./Stories";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   story: Story;
@@ -35,6 +36,8 @@ const StoryModal: React.FC<Props> = ({
   paused,
   setPaused,
 }) => {
+  const { t } = useTranslation();
+
   const videoRef = useRef<HTMLVideoElement>(null);
   const animationRef = useRef<number | null>(null);
   const startTimeRef = useRef<number>(0);
@@ -133,7 +136,7 @@ const StoryModal: React.FC<Props> = ({
       <div className="reply-input">
         <input
           type="text"
-          placeholder="Reply..."
+          placeholder={t("Reply...")}
           value={replyInput}
           onChange={(e) => setReplyInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleReply()}

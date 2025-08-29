@@ -1,10 +1,13 @@
 import { useState, useEffect, useRef } from "react";
 import "../styles/layout/_messages.scss";
 import { pushNotification } from "../utils/notify";
+import { useTranslation } from "react-i18next";
 
+// ===== Types for reactions =====
 type ReactionEmoji = "👍" | "❤️" | "😂" | "😮" | "😢" | "😡";
 const REACTIONS: ReactionEmoji[] = ["👍", "❤️", "😂", "😮", "😢", "😡"];
 
+// ===== Message Type =====
 interface MessageType {
   id: number;
   sender: string;
@@ -20,6 +23,7 @@ interface MessageType {
   deleted: boolean;
 }
 
+// ===== User Type =====
 interface UserType {
   id: number;
   name: string;
@@ -28,12 +32,13 @@ interface UserType {
   messages: MessageType[];
   unread: number;
 }
+
 interface FileData {
   file: File;
   url: string;
 }
 
-// ===== Fake Users 20 =====
+// ===== Generate 20 fake users for demo =====
 const fakeUsers: UserType[] = Array.from({ length: 20 }, (_, i) => ({
   id: i + 1,
   name: `User${i + 1}`,
@@ -44,6 +49,9 @@ const fakeUsers: UserType[] = Array.from({ length: 20 }, (_, i) => ({
 }));
 
 const Messages = () => {
+  const { t } = useTranslation();
+
+  // ===== Notifications helper (with toggle support) =====
   const notify = (
     msg: string,
     type: "info" | "success" | "warning" | "error" = "info"
@@ -52,10 +60,13 @@ const Messages = () => {
       pushNotification(msg, type);
     }
   };
+
+  // ===== State management =====
   const [users, setUsers] = useState<UserType[]>(() => {
     const saved = localStorage.getItem("users");
     return saved ? JSON.parse(saved) : fakeUsers;
   });
+
   const [activeChat, setActiveChat] = useState<UserType>(users[0]);
   const [newMessage, setNewMessage] = useState("");
   const [newFile, setNewFile] = useState<FileData | null>(null);
@@ -66,6 +77,7 @@ const Messages = () => {
   );
   const chatBodyRef = useRef<HTMLDivElement>(null);
 
+  // ===== Chat settings with persistence =====
   const [settings, setSettings] = useState(() => {
     const saved = localStorage.getItem("settings");
     return saved
@@ -80,6 +92,7 @@ const Messages = () => {
         };
   });
 
+  // ===== Toggle setting (save in localStorage) =====
   const toggleSetting = (key: keyof typeof settings) => {
     setSettings((prev: typeof settings) => {
       const updated = { ...prev, [key]: !prev[key] };
@@ -88,19 +101,19 @@ const Messages = () => {
     });
   };
 
-  // ===== Auto Scroll =====
+  // ===== Auto scroll chat when new messages arrive =====
   useEffect(() => {
     if (settings.autoScroll) {
       chatBodyRef.current?.scrollTo(0, chatBodyRef.current.scrollHeight);
     }
   }, [activeChat.messages, settings.autoScroll]);
 
-  // ===== Save Users =====
+  // ===== Save users in localStorage when state changes =====
   useEffect(() => {
     localStorage.setItem("users", JSON.stringify(users));
   }, [users]);
 
-  // ===== Send Message =====
+  // ===== Send message =====
   const handleSend = () => {
     if (!newMessage.trim() && !newFile) return;
 
@@ -110,13 +123,17 @@ const Messages = () => {
 
     if (newFile) {
       const kind = newFile.file.type.startsWith("image")
-        ? "image"
+        ? t("Messages.Image")
         : newFile.file.type.startsWith("audio")
-        ? "audio"
+        ? t("Messages.Audio")
         : newFile.file.type.startsWith("video")
-        ? "video"
-        : "file";
-      notify(`You sent a ${kind} to ${activeChat.name} 📎`, "success");
+        ? t("Messages.Video")
+        : t("Messages.File");
+
+      notify(
+        t("Messages.SentFile", { kind, name: activeChat.name }),
+        "success"
+      );
     }
 
     const newMsg: MessageType = {
@@ -146,22 +163,23 @@ const Messages = () => {
 
     setNewMessage("");
     setNewFile(null);
-    notify(`You sent a message to ${activeChat.name} ✉️`, "success");
+    notify(t("Messages.SentMessage", { name: activeChat.name }), "success");
   };
 
+  // ===== Typing indicator =====
   const handleTyping = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewMessage(e.target.value);
     setTyping(e.target.value.length > 0);
   };
 
-  // ===== File Change =====
+  // ===== File upload handler =====
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
 
-      // تقييد حجم الملف لو تحب (مثلاً 20 ميجا)
+      // Restrict file size (20 MB limit for demo)
       if (file.size > 20 * 1024 * 1024) {
-        alert("File too large!");
+        alert(t("Messages.FileTooLarge"));
         return;
       }
 
@@ -170,6 +188,7 @@ const Messages = () => {
     }
   };
 
+  // ===== Search filter =====
   const filteredUsers = users.filter(
     (u) =>
       u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -178,27 +197,33 @@ const Messages = () => {
       )
   );
 
-  // ===== Reactions =====
+  // ===== Toggle reaction on a message =====
   const toggleReaction = (msg: MessageType, emoji: ReactionEmoji) => {
     const updatedMessages = activeChat.messages.map((m) => {
       if (m.id !== msg.id) return m;
       const updatedReactions = { ...m.reactions };
+
+      // If user already reacted with another emoji → remove it
       if (m.userReaction && m.userReaction !== emoji)
         updatedReactions[m.userReaction] -= 1;
+
+      // Toggle emoji
       updatedReactions[emoji] =
         m.userReaction === emoji
           ? m.reactions[emoji] - 1
           : m.reactions[emoji] + 1;
+
       return {
         ...m,
         reactions: updatedReactions,
         userReaction: m.userReaction === emoji ? null : emoji,
       };
     });
+
     const updatedChat = { ...activeChat, messages: updatedMessages };
     setActiveChat(updatedChat);
     setUsers(users.map((u) => (u.id === updatedChat.id ? updatedChat : u)));
-    notify(`You reacted ${emoji} in chat with ${activeChat.name}`, "success");
+    notify(t("Messages.React", { emoji, name: activeChat.name }), "success");
   };
 
   // ===== Edit/Delete =====
@@ -218,7 +243,7 @@ const Messages = () => {
     const updatedChat = { ...activeChat, messages: updatedMessages };
     setActiveChat(updatedChat);
     setUsers(users.map((u) => (u.id === updatedChat.id ? updatedChat : u)));
-    notify(`You edited a message in chat with ${activeChat.name} ✏️`, "info");
+    notify(t("Messages.Edited", { name: activeChat.name }), "info");
   };
 
   const handleDelete = (msg: MessageType) => {
@@ -228,13 +253,10 @@ const Messages = () => {
     const updatedChat = { ...activeChat, messages: updatedMessages };
     setActiveChat(updatedChat);
     setUsers(users.map((u) => (u.id === updatedChat.id ? updatedChat : u)));
-    notify(
-      `You deleted a message in chat with ${activeChat.name} 🗑️`,
-      "warning"
-    );
+    notify(t("Messages.Deleted", { name: activeChat.name }), "warning");
   };
 
-  // ===== Reply =====
+  // ===== Reply to a message =====
   const addReply = (msg: MessageType, text: string) => {
     if (!text.trim()) return;
     const reply: MessageType = {
@@ -257,16 +279,19 @@ const Messages = () => {
     const updatedChat = { ...activeChat, messages: updatedMessages };
     setActiveChat(updatedChat);
     setUsers(users.map((u) => (u.id === updatedChat.id ? updatedChat : u)));
-    notify(`You replied to ${activeChat.name}: "${text.trim()}" 💬`, "info");
+    notify(
+      t("Messages.Replied", { text: text.trim(), name: activeChat.name }),
+      "info"
+    );
   };
 
-  // ===== Load Older =====
+  // ===== Load older messages (demo) =====
   const handleLoadOlder = () => {
     const olderMsg: MessageType = {
       id: Date.now() - 1000,
       sender: activeChat.name,
-      text: "This is an older message",
-      time: "Yesterday",
+      text: t("Messages.OlderMessage"),
+      time: t("Messages.Yesterday"),
       reactions: { "👍": 0, "❤️": 0, "😂": 0, "😮": 0, "😢": 0, "😡": 0 },
       userReaction: null,
       replies: [],
@@ -280,8 +305,10 @@ const Messages = () => {
     setActiveChat(updatedChat);
     setUsers(users.map((u) => (u.id === updatedChat.id ? updatedChat : u)));
   };
+
   type SettingsType = typeof settings;
 
+  // ===== UI =====
   return (
     <div className={`messages-page ${settings.darkMode ? "dark" : "light"}`}>
       {/* Tabs */}
@@ -290,19 +317,19 @@ const Messages = () => {
           className={activeTab === "chats" ? "active" : ""}
           onClick={() => setActiveTab("chats")}
         >
-          Chats
+          {t("Messages.Chats")}
         </button>
         <button
           className={activeTab === "messages" ? "active" : ""}
           onClick={() => setActiveTab("messages")}
         >
-          Messages
+          {t("Messages.Messages")}
         </button>
         <button
           className={activeTab === "settings" ? "active" : ""}
           onClick={() => setActiveTab("settings")}
         >
-          Settings
+          {t("Messages.Settings")}
         </button>
       </div>
 
@@ -312,7 +339,7 @@ const Messages = () => {
           <div className="search-bar">
             <input
               type="text"
-              placeholder="Search messages..."
+              placeholder={t("Messages.SearchPlaceholder")}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -340,7 +367,7 @@ const Messages = () => {
                 </h4>
                 <p>
                   {user.messages[user.messages.length - 1]?.sender === "Me"
-                    ? "You: "
+                    ? t("Messages.You")
                     : ""}
                   {user.messages[user.messages.length - 1]?.text}
                 </p>
@@ -363,14 +390,14 @@ const Messages = () => {
             <span
               className={`status ${activeChat.online ? "online" : "offline"}`}
             >
-              {activeChat.online ? "Online" : "Offline"}
+              {activeChat.online ? t("Messages.Online") : t("Messages.Offline")}
             </span>
           </h3>
         </div>
 
         <div className="chat-body" ref={chatBodyRef}>
           <button className="load-older" onClick={handleLoadOlder}>
-            Load Older Messages
+            {t("Messages.LoadOlderMessages")}
           </button>
           {activeChat.messages.map((msg) => (
             <div
@@ -379,7 +406,7 @@ const Messages = () => {
             >
               {msg.deleted ? (
                 settings.showDeletedMessages ? (
-                  <em>Message deleted</em>
+                  <em>{t("Messages.DeletedMessage")}</em>
                 ) : null
               ) : msg.editing ? (
                 <input
@@ -406,12 +433,17 @@ const Messages = () => {
                   ))}
                 {!msg.deleted && (
                   <>
-                    <button onClick={() => toggleEdit(msg)}>Edit</button>
-                    <button onClick={() => handleDelete(msg)}>Delete</button>
+                    <button onClick={() => toggleEdit(msg)}>
+                      {t("Messages.Edit")}
+                    </button>
+                    <button onClick={() => handleDelete(msg)}>
+                      {t("Messages.Delete")}
+                    </button>
                   </>
                 )}
               </div>
 
+              {/* Replies */}
               <div className="replies">
                 {msg.replies.map((r) => (
                   <div
@@ -431,7 +463,7 @@ const Messages = () => {
                   <div className="reply-input">
                     <input
                       type="text"
-                      placeholder="Type a reply..."
+                      placeholder={t("Messages.TypeReply")}
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
                           addReply(msg, e.currentTarget.value);
@@ -445,7 +477,7 @@ const Messages = () => {
             </div>
           ))}
           {settings.showTypingIndicator && typing && (
-            <div className="typing-indicator">Typing...</div>
+            <div className="typing-indicator">{t("Messages.Typing")}</div>
           )}
         </div>
 
@@ -455,11 +487,11 @@ const Messages = () => {
             type="text"
             value={newMessage}
             onChange={handleTyping}
-            placeholder="Type a message..."
+            placeholder={t("Messages.TypeMessage")}
             onKeyDown={(e) => e.key === "Enter" && handleSend()}
           />
           <input type="file" onChange={handleFileChange} />
-          <button onClick={handleSend}>Send</button>
+          <button onClick={handleSend}>{t("Messages.Send")}</button>
         </div>
       </div>
 
@@ -468,16 +500,16 @@ const Messages = () => {
         className={`tab-content ${activeTab === "settings" ? "active" : ""}`}
       >
         <div className="settings">
-          <h3>Settings</h3>
-          {(Object.keys(settings) as (keyof SettingsType)[]).map((key) => (
-            <div key={key.toString()} className="setting-item">
+          <h3>{t("Messages.Settings")}</h3>
+          {Object.entries(settings).map(([key, value]) => (
+            <div key={key} className="setting-item">
               <label>
                 <input
                   type="checkbox"
-                  checked={settings[key]}
-                  onChange={() => toggleSetting(key)}
+                  checked={value as boolean}
+                  onChange={() => toggleSetting(key as keyof SettingsType)}
                 />{" "}
-                {key.toString()}
+                {t(`Messages.SettingsKeys.${String(key)}`, String(key))}
               </label>
             </div>
           ))}

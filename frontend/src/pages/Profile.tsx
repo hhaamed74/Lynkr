@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import "../styles/layout/_profile.scss";
-import { pushNotification } from "../utils/notify"; // 🛎️ جديد
+import { pushNotification } from "../utils/notify";
+import { useTranslation } from "react-i18next";
 
 interface User {
   id: number;
@@ -25,10 +26,13 @@ interface User {
 }
 
 const Profile: React.FC = () => {
+  const { t } = useTranslation();
+
   const [user, setUser] = useState<User | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState<Partial<User>>({});
 
+  // Load current user from localStorage and enrich with mock stats
   useEffect(() => {
     const current = localStorage.getItem("currentUser");
     if (current) {
@@ -49,30 +53,37 @@ const Profile: React.FC = () => {
           "https://picsum.photos/200?random=3",
           "https://picsum.photos/200?random=4",
         ],
-        badges: ["🔥 Active", "⭐ Top Member", "🎯 Early User"],
+        badges: [
+          t("Badges.Active"),
+          t("Badges.TopMember"),
+          t("Badges.EarlyUser"),
+        ],
         timeline: [
-          { date: "2025-08-20", action: "Updated profile picture" },
-          { date: "2025-08-21", action: "Posted a new photo" },
-          { date: "2025-08-23", action: "Made 3 new friends" },
+          {
+            date: "2025-08-20",
+            action: t("Profile.Timeline.UpdatedProfilePicture"),
+          },
+          { date: "2025-08-21", action: t("Profile.Timeline.PostedNewPhoto") },
+          { date: "2025-08-23", action: t("Profile.Timeline.MadeNewFriends") },
         ],
       });
     }
-  }, []);
+  }, [t]);
 
+  // Start editing profile
   const handleEditClick = () => {
     if (user) {
       setFormData(user);
       setIsEditing(true);
-      // 🛎️ إشعار بدء التعديل
-      pushNotification("Editing your profile… ✏️", "info");
+      pushNotification(t("Profile.EditProfile"), "info");
     }
   };
 
+  // Save profile updates
   const handleSave = (e?: React.MouseEvent<HTMLButtonElement>) => {
-    e?.preventDefault(); // منع submit الافتراضي لو حصل
+    e?.preventDefault();
     if (!user) return;
 
-    // نحدد ايه اللي اتغير علشان نعرضه في النوتيفيكيشن
     const changed: string[] = [];
     if (formData.fullName !== undefined && formData.fullName !== user.fullName)
       changed.push("name");
@@ -86,10 +97,10 @@ const Profile: React.FC = () => {
     const updatedUser = { ...user, ...formData };
     setUser(updatedUser);
 
-    // حفظ في localStorage
+    // Persist to localStorage
     localStorage.setItem("currentUser", JSON.stringify(updatedUser));
 
-    // كمان نحدث users_demo
+    // Update in users_demo if exists
     const users = JSON.parse(localStorage.getItem("users_demo") || "[]");
     const idx = users.findIndex((u: User) => u.id === updatedUser.id);
     if (idx !== -1) {
@@ -99,16 +110,19 @@ const Profile: React.FC = () => {
 
     setIsEditing(false);
 
-    // 🛎️ إشعار الحفظ + ايه اللي اتغير
     const detail = changed.length > 0 ? ` (${changed.join(", ")})` : "";
-    pushNotification(`Profile updated successfully${detail} ✅`, "success");
+    pushNotification(
+      `${t("Settings.ToastMessages.ProfileUpdated")}${detail}`,
+      "success"
+    );
   };
 
-  if (!user) return <div className="profile-page">No user found 😢</div>;
+  if (!user)
+    return <div className="profile-page">{t("Profile.NoUserFound")}</div>;
 
   return (
     <div className="profile-page">
-      {/* Cover */}
+      {/* Cover section */}
       <div
         className="cover"
         style={{
@@ -127,13 +141,13 @@ const Profile: React.FC = () => {
           <div className="user-info">
             <h2>{user.fullName}</h2>
             <p>@{user.username}</p>
-            <p className="bio">{user.bio || "No bio added yet."}</p>
+            <p className="bio">{user.bio || t("Settings.Bio")}</p>
             <button
               className="btn-edit"
               onClick={handleEditClick}
               type="button"
             >
-              Edit Profile
+              {t("Profile.EditProfile")}
             </button>
           </div>
         </div>
@@ -143,41 +157,41 @@ const Profile: React.FC = () => {
       <div className="profile-stats">
         <div>
           <strong>{user.stats?.posts || 0}</strong>
-          <span>Posts</span>
+          <span>{t("Profile.Posts")}</span>
         </div>
         <div>
           <strong>{user.stats?.friends || 0}</strong>
-          <span>Friends</span>
+          <span>{t("Profile.Friends")}</span>
         </div>
         <div>
           <strong>{user.stats?.photos || 0}</strong>
-          <span>Photos</span>
+          <span>{t("Profile.Photos")}</span>
         </div>
       </div>
 
-      {/* Details */}
+      {/* About section */}
       <div className="profile-details">
-        <h3>About</h3>
+        <h3>{t("Profile.About")}</h3>
         <ul className="details-list">
           <li>
-            <span className="label">Email:</span>
+            <span className="label">{t("Profile.Email")}:</span>
             <span className="value">{user.email}</span>
           </li>
           {user.phone && (
             <li>
-              <span className="label">Phone:</span>
+              <span className="label">{t("Profile.Phone")}:</span>
               <span className="value">{user.phone}</span>
             </li>
           )}
           {user.dob && (
             <li>
-              <span className="label">DOB:</span>
+              <span className="label">{t("Profile.DOB")}:</span>
               <span className="value">{user.dob}</span>
             </li>
           )}
           {user.gender && (
             <li>
-              <span className="label">Gender:</span>
+              <span className="label">{t("Profile.Gender")}:</span>
               <span className="value">{user.gender}</span>
             </li>
           )}
@@ -186,7 +200,7 @@ const Profile: React.FC = () => {
 
       {/* Friends */}
       <div className="profile-friends">
-        <h3>Friends</h3>
+        <h3>{t("Profile.Friends")}</h3>
         <div className="friends-list">
           {user.friends?.map((f, i) => (
             <img key={i} src={f} alt="friend" />
@@ -196,7 +210,7 @@ const Profile: React.FC = () => {
 
       {/* Photos */}
       <div className="profile-photos">
-        <h3>Photos</h3>
+        <h3>{t("Profile.Photos")}</h3>
         <div className="photos-grid">
           {user.photos?.map((p, i) => (
             <img key={i} src={p} alt="user upload" />
@@ -204,9 +218,9 @@ const Profile: React.FC = () => {
         </div>
       </div>
 
-      {/* Badges */}
+      {/* Achievements */}
       <div className="profile-badges">
-        <h3>Achievements</h3>
+        <h3>{t("Profile.Achievements")}</h3>
         <div className="badges-list">
           {user.badges?.map((b, i) => (
             <span key={i} className="badge">
@@ -218,7 +232,7 @@ const Profile: React.FC = () => {
 
       {/* Timeline */}
       <div className="profile-timeline">
-        <h3>Recent Activity</h3>
+        <h3>{t("Profile.RecentActivity")}</h3>
         <ul>
           {user.timeline?.map((t, i) => (
             <li key={i}>
@@ -239,11 +253,11 @@ const Profile: React.FC = () => {
             >
               ×
             </button>
-            <h3>Edit Profile</h3>
+            <h3>{t("Profile.EditProfile")}</h3>
 
             <form>
               <label>
-                Full Name
+                {t("Settings.FullName")}
                 <input
                   type="text"
                   value={formData.fullName || ""}
@@ -254,7 +268,7 @@ const Profile: React.FC = () => {
               </label>
 
               <label>
-                Bio
+                {t("Settings.Bio")}
                 <textarea
                   value={formData.bio || ""}
                   onChange={(e) =>
@@ -264,7 +278,7 @@ const Profile: React.FC = () => {
               </label>
 
               <label>
-                Avatar URL
+                {t("Settings.AvatarURL")}
                 <input
                   type="text"
                   value={formData.avatar || ""}
@@ -275,7 +289,7 @@ const Profile: React.FC = () => {
               </label>
 
               <label>
-                Cover URL
+                {t("Settings.CoverURL")}
                 <input
                   type="text"
                   value={formData.cover || ""}
@@ -287,14 +301,14 @@ const Profile: React.FC = () => {
 
               <div className="modal-actions">
                 <button className="btn-save" onClick={handleSave} type="button">
-                  Save
+                  {t("Profile.Save")}
                 </button>
                 <button
                   className="btn-cancel"
                   onClick={() => setIsEditing(false)}
                   type="button"
                 >
-                  Cancel
+                  {t("Profile.Cancel")}
                 </button>
               </div>
             </form>

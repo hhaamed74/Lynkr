@@ -1,69 +1,126 @@
-# React + TypeScript + Vite
+# 🌐 Lynkr - Social Media Platform
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Lynkr is a **React + TypeScript + Vite** social media web application that provides core features of a modern social platform.  
+It includes posting, stories, reactions, comments, messaging, notifications, user settings, and more — with **multi-language support (English/Arabic)**.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Tech Stack
 
-## Expanding the ESLint configuration
+- ⚛️ React + TypeScript + Vite
+- 🎨 SCSS (modular, dark/light themes)
+- 🌍 i18next (multi-language: English/Arabic)
+- 💾 IndexedDB + localStorage (persistent storage)
+- 🔔 Custom Notification System
+- 📦 Dexie.js for IndexedDB management
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## ✨ Features
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+### 📝 Posts
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- Create posts with **text, images, videos, and audio**.
+- Edit / Delete / Restore posts.
+- Copy text from posts.
+- Add reactions (👍 ❤️ 😂 😮 😢 😡) with live counters.
+- Save & Share posts.
+- Comment & Reply system (with edit/delete & reactions).
+- Search through posts.
+- Stored persistently in **IndexedDB**.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### 📖 Stories
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- Add stories (image / video).
+- Support for **replies & reactions**.
+- Thumbnails preview.
+- Pause/Resume stories.
+- Story duration for image/video is tracked.
+
+---
+
+### 👥 Comments & Replies
+
+- Add comments and replies on posts.
+- Edit / Delete comments and replies.
+- Reactions available on both.
+- Fully synced with local storage.
+
+---
+
+### 👤 Profile Page
+
+- User details: full name, username, bio, email, phone, date of birth, gender.
+- Profile avatar and cover photo.
+- Achievements (badges).
+- Timeline (recent activity).
+- Friends and photos section.
+
+---
+
+### ⚙️ Settings
+
+- Update user info (name, username, email, bio, avatar, cover).
+- Change password with confirmation.
+- Reset changes option.
+- **Dark/Light theme** support.
+
+---
+
+### 🔔 Notifications
+
+- Custom notification system with:
+  - Info, success, warning, error types.
+  - Mark as read / Clear all.
+  - Synced across browser tabs with `BroadcastChannel`.
+
+---
+
+### 💬 Messenger
+
+- Chats with fake demo users.
+- Send **text, images, audio, and video**.
+- Message actions: **edit, delete, reply**.
+- Reactions on messages.
+- Typing indicator.
+- Load older messages.
+- Messenger settings:
+  - Enable/disable notifications
+  - Show/hide typing indicator
+  - Show/hide deleted messages
+  - Enable/disable reactions
+  - Auto-scroll
+- **Dark mode support** for chat.
+
+---
+
+### 🔐 Authentication
+
+- Register new account:
+  - Full name, username, email + confirm email, password + confirm password.
+  - Phone (optional), Date of birth, Gender.
+  - Terms & Privacy agreement.
+- Login with validation.
+- Logout option.
+
+---
+
+## 🌍 Multi-language Support
+
+- English 🇬🇧 / Arabic 🇪🇬 with **i18next**.
+- All UI elements, placeholders, buttons, and messages are translated.
+
+## 🚀 Demo
+
+👉 [Click here to try Lynkr](https://lynkr.vercel.app)
+
+## 📸 Screenshots
+
+(Add some screenshots of your app here for better presentation)
+
+## 👨‍💻 Author
+
+Lynkr was built with ❤️ using React + TypeScript.
+Developer: [Hamed_Al-Shahawy]
