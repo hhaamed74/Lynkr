@@ -1,0 +1,361 @@
+@import "../abstracts/variables";
+/* ===== PostCard & PostList Styles ===== */
+$color-light: #ffffff;
+$color-dark: #1c1e21;
+$color-dark-hover: #2a2c30;
+$color-primary: #1877f2;
+$color-accent: #e0245e;
+$color-gray: #65676b;
+// Home Page
+.home-page {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+  background: $color-light;
+  transition: background 0.3s ease;
+
+  &.dark {
+    background: $color-dark;
+  }
+
+  .main-content {
+    width: 100%;
+    max-width: 720px;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    transition: color 0.3s ease;
+
+    @media (max-width: 768px) {
+      padding: 0 1rem;
+    }
+  }
+}
+
+/* ===== Stories ===== */
+.stories-fullscreen {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  margin: auto;
+  border-radius: 15px;
+  overflow: hidden;
+  background: #000;
+  color: #fff;
+
+  .story-container {
+    position: relative;
+    width: 100%;
+    height: 800px;
+
+    .progress-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.2);
+
+      .progress {
+        height: 100%;
+        background: #00c8ff;
+        transition: width 0.05s linear;
+      }
+    }
+
+    .story-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .nav {
+      position: absolute;
+      top: 0;
+      height: 100%;
+      width: 50%;
+      cursor: pointer;
+      z-index: 5;
+    }
+
+    .nav.left {
+      left: 0;
+    }
+    .nav.right {
+      right: 0;
+    }
+
+    .story-header {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      .story-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 2px solid #00c8ff;
+      }
+
+      .story-username {
+        font-weight: bold;
+      }
+    }
+
+    .story-reactions {
+      position: absolute;
+      bottom: 60px;
+      left: 10px;
+      display: flex;
+      gap: 0.5rem;
+
+      span {
+        font-size: 1.5rem;
+        cursor: pointer;
+        transition: transform 0.2s ease;
+        &:hover {
+          transform: scale(1.3);
+        }
+      }
+
+      .reactions-display {
+        margin-left: 10px;
+        span {
+          margin-right: 0.3rem;
+        }
+      }
+    }
+
+    .story-reply {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      right: 10px;
+
+      input {
+        width: 100%;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        border: 1px solid #ccc;
+        outline: none;
+      }
+    }
+  }
+}
+
+.stories-thumbnails {
+  display: flex;
+  overflow-x: auto; // يسمح بالتمرير لو أكتر من الستوريز
+  white-space: nowrap; // يخليهم في خط واحد
+  padding: 0.5rem 0;
+
+  .story-thumbnail {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    margin-right: 0.5rem; // مسافة بسيطة بين الستوريز
+
+    .story-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: 2px solid #1877f2;
+      object-fit: cover;
+    }
+
+    .story-username {
+      margin-top: 0.2rem;
+      font-size: 0.75rem;
+      text-align: center;
+      color: #333;
+      max-width: 60px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+  &.dark .story-username {
+    color: #fff;
+  }
+
+  /* اخفاء scrollbar للمظهر الجمالي */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none; /* IE 10+ */
+  scrollbar-width: none; /* Firefox */
+}
+
+/* Modal */
+.story-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.95);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  cursor: pointer;
+
+  img,
+  video {
+    max-height: 80%;
+    max-width: 90%;
+    border-radius: 10px;
+  }
+
+  .close-btn,
+  .prev-btn,
+  .next-btn {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.3);
+    border: none;
+    color: #fff;
+    font-size: 2rem;
+    cursor: pointer;
+    padding: 0.3rem 0.6rem;
+    border-radius: 50%;
+  }
+  .close-btn {
+    top: 20px;
+    right: 20px;
+    font-size: 2.5rem;
+  }
+  .prev-btn {
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  .next-btn {
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .story-modal-username {
+    position: absolute;
+    top: 10px;
+    left: 20px;
+    font-weight: bold;
+    color: #fff;
+  }
+
+  .story-reactions-modal {
+    position: absolute;
+    bottom: 60px;
+    display: flex;
+    gap: 0.5rem;
+    left: 20px;
+    .reactions-display {
+      margin-left: 10px;
+      span {
+        margin-right: 0.3rem;
+      }
+    }
+    span {
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: transform 0.2s;
+      &:hover {
+        transform: scale(1.3);
+      }
+    }
+  }
+
+  .story-reply-modal {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
+    input {
+      width: 100%;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      border: 1px solid #ccc;
+      outline: none;
+    }
+  }
+}
+
+button {
+  position: relative;
+  overflow: hidden;
+}
+
+button .shine {
+  position: absolute;
+  top: 0;
+  left: -75%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    rgba(255, 255, 255, 0.3) 0%,
+    rgba(255, 255, 255, 0.6) 50%,
+    rgba(255, 255, 255, 0.3) 100%
+  );
+  transform: skewX(-25deg);
+  animation: shine 1.8s forwards infinite;
+}
+
+@keyframes shine {
+  100% {
+    left: 125%;
+  }
+}
+
+@keyframes shine {
+  0% {
+    left: -70%;
+  }
+  50% {
+    left: 100%;
+  }
+  100% {
+    left: -70%;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.twist {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 5px solid transparent;
+  border-top: 5px solid transparent;
+  animation: spin 1s linear infinite;
+  background: conic-gradient(#00c8ff, #fff701, #ff00ff, #00c8ff);
+}
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

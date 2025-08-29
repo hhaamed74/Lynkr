@@ -1,0 +1,39 @@
+/frontend
+  /public
+    index.html
+    favicon.ico
+    logo.png
+  /src
+    /assets
+      /images
+      /icons
+      /fonts
+    /components
+      /common       # أزرار - Inputs - Modal - Navbar - Footer
+      /auth         # login - signup - forgotPassword
+      /posts        # postCard - postForm - comments
+      /profile      # userProfile - editProfile
+      /messages     # chatBox - chatList
+      /notifications
+    /pages
+      Home.jsx
+      Profile.jsx
+      Messages.jsx
+      Notifications.jsx
+      Login.jsx
+      Signup.jsx
+    /context
+      AuthContext.jsx
+      ThemeContext.jsx
+    /hooks
+      useAuth.js
+      useFetch.js
+    /services
+      api.js        # Axios أو Fetch
+    /utils
+      validators.js
+      constants.js
+    App.jsx
+    index.js
+  package.json
+  vite.config.js

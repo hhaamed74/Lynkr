@@ -1,0 +1,286 @@
+// src/styles/_auth.scss
+$primary: #2563eb; // أزرق أساسي
+$primary-dark: #1d4ed8;
+$accent: #16a34a; // أخضر
+$error: #dc2626; // أحمر
+$bg: linear-gradient(135deg, #1e293b, #0f172a); // خلفية الصفحة
+$text-light: #f1f5f9;
+$text-muted: #94a3b8;
+
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 28px;
+  background: $bg;
+  font-family: Inter, "Segoe UI", Roboto, sans-serif;
+  color: $text-light;
+
+  &.light {
+    background: linear-gradient(135deg, #f9fafb, #f1f5f9);
+    color: #111;
+  }
+
+  .auth-card {
+    width: 100%;
+    max-width: 600px;
+    // border-radius: 16px;
+    padding: 32px;
+    background: #1e293b;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
+    border: 2px solid transparent;
+    border-image: linear-gradient(90deg, #00c8ff, #fff701) 1;
+    &.dark {
+      background: #1e293b;
+    }
+    &.light {
+      background: #ffffff;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    .title {
+      font-size: 26px;
+      font-weight: 800;
+      color: $primary;
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: $text-muted;
+      margin-bottom: 20px;
+    }
+
+    .auth-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+
+      .row {
+        display: flex;
+        gap: 14px;
+
+        @media (max-width: 760px) {
+          flex-direction: column;
+        }
+
+        .form-group {
+          flex: 1;
+        }
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+
+        label {
+          font-size: 14px;
+          font-weight: 600;
+          color: $text-light;
+        }
+
+        // input + select + textarea unified
+        input,
+        select,
+        textarea {
+          padding: 12px 14px;
+          border-radius: 10px;
+          border: 1px solid #334155;
+          background: #0f172a;
+          color: $text-light;
+          font-size: 15px;
+          outline: none;
+          transition: all 0.2s ease;
+        }
+
+        textarea {
+          resize: none;
+          min-height: 90px;
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+          color: $text-muted;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+          border-color: $primary;
+          box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3);
+        }
+
+        .error-text {
+          color: $error;
+          font-size: 13px;
+        }
+      }
+
+      /* Light mode overrides */
+      .light & {
+        .form-group {
+          label {
+            color: #f8f1f1;
+          }
+          input,
+          select,
+          textarea {
+            background: #ffffff;
+            border: 1px solid #d1d5db;
+            color: #111;
+          }
+          input::placeholder,
+          textarea::placeholder {
+            color: #6b7280;
+          }
+        }
+      }
+
+      .pw-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        input {
+          flex: 1;
+        }
+
+        .eye {
+          background: #0f172a;
+          border: 1px solid #334155;
+          padding: 8px 10px;
+          border-radius: 8px;
+          cursor: pointer;
+          color: $text-muted;
+          transition: 0.2s;
+
+          .light & {
+            background: #f9fafb;
+            border-color: #d1d5db;
+            color: #666;
+          }
+        }
+        .eye:hover {
+          color: $text-light;
+        }
+      }
+
+      .pw-meta {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-top: 4px;
+
+        .strength {
+          flex: 1;
+          height: 8px;
+          border-radius: 6px;
+          background: #334155;
+          overflow: hidden;
+          position: relative;
+
+          .light & {
+            background: #e5e7eb;
+          }
+
+          &::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 0%;
+            transition: width 0.25s ease;
+          }
+
+          &.strength-0::after {
+            width: 10%;
+            background: $error;
+          }
+          &.strength-1::after {
+            width: 30%;
+            background: #f97316;
+          }
+          &.strength-2::after {
+            width: 55%;
+            background: #facc15;
+          }
+          &.strength-3::after {
+            width: 80%;
+            background: #22c55e;
+          }
+          &.strength-4::after {
+            width: 100%;
+            background: $accent;
+          }
+        }
+
+        .strength-label {
+          font-size: 13px;
+          color: $text-muted;
+        }
+      }
+
+      .checkbox {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 13px;
+        color: $text-muted;
+
+        input {
+          width: 16px;
+          height: 16px;
+          accent-color: $primary;
+        }
+
+        a {
+          color: $primary;
+          text-decoration: underline;
+        }
+
+        .light & {
+          color: #444;
+        }
+      }
+
+      .btn-auth {
+        padding: 12px 16px;
+        border-radius: 12px;
+        border: none;
+        font-weight: 700;
+        font-size: 15px;
+        cursor: pointer;
+        background: $primary;
+        color: white;
+        transition: background 0.2s ease, transform 0.15s ease;
+      }
+
+      .btn-auth:hover {
+        background: $primary-dark;
+      }
+
+      .btn-auth:active {
+        transform: translateY(1px);
+      }
+
+      .switch-text {
+        margin-top: 12px;
+        font-size: 13px;
+        text-align: center;
+        color: $text-muted;
+
+        a {
+          color: $primary;
+          text-decoration: underline;
+        }
+
+        .light & {
+          color: #555;
+        }
+      }
+    }
+  }
+}

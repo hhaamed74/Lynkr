@@ -1,0 +1,707 @@
+/* =========================================================
+   POSTS UI — Light/Dark, Responsive, Strong Borders, Animations
+   File: styles/components/_posts.scss
+   ========================================================= */
+
+/* ===== Theme Vars ===== */
+:root {
+  --bg: #ffffff;
+  --fg: #10131f;
+  --muted: #6b7280;
+
+  --bg-dark: #0f1220;
+  --fg-dark: #eef2ff;
+
+  --indigo: #6366f1;
+  --pink: #ec4899;
+  --teal: #14b8a6;
+  --amber: #f59e0b;
+
+  --border: #e5e7eb; /* light border */
+  --border-strong: #cbd5e1; /* stronger border */
+  --border-dark: #2b2f45; /* dark border */
+
+  --radius: 16px;
+  --gap: 24px;
+
+  --shadow-sm: 0 6px 16px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 12px 28px rgba(0, 0, 0, 0.16);
+  --shadow-lg: 0 22px 48px rgba(0, 0, 0, 0.26);
+
+  --t: 0.26s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+body.dark {
+  --bg: var(--bg-dark);
+  --fg: var(--fg-dark);
+  --border: var(--border-dark);
+  --border-strong: #3a3f5c;
+}
+
+/* ===== Animations ===== */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes pop {
+  0% {
+    transform: scale(0.96);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ===== Page container ===== */
+.feed {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 24px 16px 40px;
+}
+
+/* =========================================================
+   GRID (Stack by default – all cards same width underneath)
+   ========================================================= */
+.posts-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--gap);
+  justify-items: center;
+  padding: 16px 0;
+}
+
+.posts-grid .post-card {
+  width: 100%;
+  max-width: 760px;
+}
+@media (max-width: 520px) {
+  .posts-grid .post-card {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 8px; // يخلي فيه مسافة صغيرة من اليمين والشمال
+  }
+}
+
+/* Optional: multi-column layout (use .posts-grid.grid if you want it) */
+.posts-grid.grid {
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  justify-items: stretch;
+}
+.posts-grid.grid .post-card {
+  width: auto;
+}
+
+/* =========================================================
+   CARD WRAPPER (static gradient ring + hover lift)
+   ========================================================= */
+.post-card {
+  position: relative;
+  // border-radius: calc(var(--radius) + 6px);
+  padding: 2px; /* room for gradient ring */
+  animation: fadeUp 0.35s ease both;
+  transition: transform var(--t), box-shadow var(--t), filter var(--t);
+  will-change: transform;
+  background: linear-gradient(90deg, #00c8ff, #fff701) border-box;
+}
+.post-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* =========================================================
+   ACTUAL CARD (strong border)
+   ========================================================= */
+.pc-card {
+  background: var(--bg);
+  color: var(--fg);
+  border: 1.5px solid var(--border-strong); /* 🔷 strong border */
+  // border-radius: var(--radius);
+  padding: 18px;
+  box-shadow: var(--shadow-sm);
+}
+
+/* ===== Header ===== */
+.pc-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 12px;
+
+  .pc-headerLeft {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .pc-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    transition: border-color var(--t), transform var(--t);
+
+    &:hover {
+      border-color: var(--indigo);
+      transform: scale(1.05);
+    }
+  }
+
+  .pc-userRow {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .pc-time {
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .pc-privacyBox select {
+    appearance: none;
+    border: none;
+    background: transparent;
+    font-size: 12px;
+    color: var(--muted);
+    cursor: pointer;
+  }
+}
+
+/* ===== Menu ===== */
+.pc-menuWrap {
+  position: relative;
+
+  .pc-flatBtn {
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    transition: transform var(--t), color var(--t);
+
+    &:hover {
+      transform: rotate(90deg);
+      color: var(--pink);
+    }
+  }
+
+  .pc-menuBox {
+    position: absolute;
+    right: 0;
+    top: 36px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    display: flex;
+    flex-direction: column;
+    transform-origin: top right;
+    animation: pop 0.18s ease both;
+    backdrop-filter: blur(8px) saturate(130%);
+    z-index: 200;
+    .pc-menuItem {
+      padding: 10px 14px;
+      border: none;
+      background: transparent;
+      text-align: left;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background var(--t), color var(--t);
+
+      &:hover {
+        background: linear-gradient(
+          90deg,
+          rgba(99, 102, 241, 0.12),
+          rgba(236, 72, 153, 0.12)
+        );
+        color: var(--fg);
+      }
+    }
+  }
+}
+
+/* ===== Content ===== */
+.pc-content {
+  font-size: 15px;
+  line-height: 1.7;
+  margin: 10px 0 12px;
+  white-space: pre-wrap;
+}
+
+/* ===== Actions ===== */
+.pc-postActions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 12px 0 6px;
+
+  button {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 15px;
+    padding: 8px 12px;
+    border-radius: 12px;
+    transition: transform var(--t), background var(--t), color var(--t);
+
+    &:hover {
+      background: rgba(99, 102, 241, 0.1);
+      transform: translateY(-2px);
+    }
+  }
+}
+
+/* ===== Reactions ===== */
+.pc-reactions {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .pc-flatBtn {
+    padding: 6px 12px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: transparent;
+    transition: background var(--t), color var(--t), transform var(--t);
+
+    &:hover {
+      background: var(--indigo);
+      color: #fff;
+      transform: translateY(-2px);
+    }
+  }
+
+  .pc-reactionTotal {
+    font-size: 13px;
+    color: #7b8090;
+  }
+
+  .pc-popup {
+    position: absolute;
+    bottom: 42px;
+    left: 0;
+    display: flex;
+    gap: 8px;
+    padding: 8px 10px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: var(--shadow-md);
+    animation: pop 0.14s ease both;
+    backdrop-filter: blur(10px) saturate(130%);
+  }
+
+  .pc-reactBtn {
+    border: none;
+    background: transparent;
+    font-size: 20px;
+    cursor: pointer;
+    transition: transform var(--t), filter var(--t);
+
+    &:hover {
+      transform: scale(1.2);
+    }
+    &.active {
+      transform: scale(1.26);
+      filter: drop-shadow(0 6px 16px rgba(99, 102, 241, 0.35));
+    }
+  }
+}
+
+/* ===== Comment Section ===== */
+.pc-commentCount {
+  margin-top: 12px;
+  margin-bottom: 6px;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--fg);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  span {
+    font-weight: 700;
+    color: var(--indigo);
+  }
+}
+
+/* ✅ دول لازم يكونوا برّه .pc-commentCount */
+.pc-addComment {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.pc-addCommentInput {
+  flex: 1;
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  background: #fff;
+  color: var(--fg);
+  font-size: 14px;
+  transition: border var(--t), box-shadow var(--t);
+
+  &:focus {
+    outline: none;
+    border-color: var(--indigo);
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.18);
+  }
+
+  body.dark & {
+    background: #1a1f35;
+    color: var(--fg-dark);
+  }
+}
+
+.pc-addCommentBtn {
+  padding: 12px 14px;
+  min-width: 44px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(90deg, #00c8ff, #fff701);
+  color: #fff;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform var(--t), filter var(--t), background var(--t),
+    opacity var(--t);
+  box-shadow: 0 10px 22px rgba(99, 102, 241, 0.18);
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+  &:active {
+    transform: translateY(0);
+    filter: brightness(0.95);
+  }
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+/* شوية ضبط للمسافات */
+.pc-commentsWrap {
+  margin-top: 10px;
+}
+
+/* موبايل */
+@media (max-width: 520px) {
+  .pc-addCommentBtn {
+    padding: 10px 12px;
+    font-size: 15px;
+  }
+}
+
+/* Shared inputs (add comment + edit) */
+.pc-inp,
+.pc-textArea,
+.pc-editWrap input {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: #fff;
+  color: var(--fg);
+  transition: border var(--t), box-shadow var(--t);
+
+  &:focus {
+    outline: none;
+    border-color: var(--indigo);
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.16);
+  }
+}
+.pc-editActions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.pc-textArea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+/* Single comment bubble */
+.pc-commentItem {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: linear-gradient(
+    180deg,
+    rgba(99, 102, 241, 0.06),
+    rgba(236, 72, 153, 0.04)
+  );
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--t), box-shadow var(--t);
+  animation: fadeUp 0.22s ease both;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .pc-commentHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+
+  .pc-commentMeta {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .pc-commentUser {
+    font-weight: 700;
+  }
+  .pc-commentTime {
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .pc-commentActions {
+    display: flex;
+    gap: 6px;
+  }
+
+  .pc-commentBtn {
+    border: none;
+    background: transparent;
+    padding: 6px 10px;
+    border-radius: 10px;
+    font-size: 12px;
+    color: #6b7280;
+    cursor: pointer;
+    transition: background var(--t), color var(--t);
+
+    &:hover {
+      background: rgba(99, 102, 241, 0.12);
+      color: var(--indigo);
+    }
+    &.danger:hover {
+      background: rgba(239, 68, 68, 0.12);
+      color: #dc2626;
+    }
+  }
+
+  .pc-commentBody {
+    margin-top: 6px;
+  }
+  .pc-commentText {
+    font-size: 14px;
+    line-height: 1.65;
+  }
+
+  .pc-commentFooter {
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .pc-replyToggle {
+    border: none;
+    background: transparent;
+    padding: 6px 10px;
+    border-radius: 10px;
+    font-size: 13px;
+    color: #64748b;
+    cursor: pointer;
+    transition: background var(--t), color var(--t);
+
+    &:hover {
+      background: rgba(20, 184, 166, 0.12);
+      color: var(--teal);
+    }
+  }
+
+  .pc-replyBox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+
+    .pc-replyInput {
+      flex: 1;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--fg);
+      transition: border var(--t), box-shadow var(--t);
+
+      &:focus {
+        outline: none;
+        border-color: var(--teal);
+        box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.18);
+      }
+    }
+
+    .btn-primary.sm,
+    .btn-secondary.sm {
+      padding: 8px 12px;
+      border-radius: 10px;
+      font-size: 13px;
+    }
+  }
+}
+
+/* Replies thread line */
+.pc-replies {
+  position: relative;
+  margin-left: 18px;
+  margin-top: 10px;
+  padding-left: 10px;
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 6px;
+    bottom: 6px;
+    width: 2px;
+    border-radius: 2px;
+    background: linear-gradient(180deg, var(--indigo), var(--pink));
+    opacity: 0.35;
+  }
+}
+
+/* Reactions inside comment – pill look */
+.pc-commentItem .pc-reactions .pc-flatBtn {
+  padding: 6px 10px;
+  border-radius: 10px;
+  background: rgba(99, 102, 241, 0.06);
+  &:hover {
+    background: var(--indigo);
+    color: #fff;
+  }
+}
+
+/* =========================================================
+   MODAL (Create Post)
+   ========================================================= */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: rgba(10, 12, 22, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(6px);
+}
+.modal-box {
+  width: min(560px, 92vw);
+  background: var(--bg);
+  color: var(--fg);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: var(--shadow-lg);
+  animation: pop 0.22s ease both;
+}
+.btn-close {
+  float: right;
+  border: none;
+  background: transparent;
+  font-size: 22px;
+  cursor: pointer;
+  color: #8b93a7;
+  transition: color var(--t);
+
+  &:hover {
+    color: var(--pink);
+  }
+}
+.modal-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 6px 0 14px;
+}
+
+.modal-textarea,
+.modal-input {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  background: #fff;
+  color: var(--fg);
+  transition: border var(--t), box-shadow var(--t);
+
+  &:focus {
+    outline: none;
+    border-color: var(--indigo);
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.18);
+  }
+}
+.modal-preview {
+  margin-bottom: 12px;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+.modal-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+/* Buttons */
+.btn-primary,
+.btn-secondary {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 12px;
+  color: #fff;
+  cursor: pointer;
+  transition: transform var(--t), filter var(--t), background var(--t);
+  box-shadow: 0 10px 22px rgba(99, 102, 241, 0.18);
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+}
+.btn-primary {
+  background: linear-gradient(90deg, #00c8ff, #fff701);
+}
+.btn-secondary {
+  background: linear-gradient(90deg, #00c8ff, #fff701);
+}
+
+/* =========================================================
+   Responsive tweaks
+   ========================================================= */
+@media (max-width: 520px) {
+  .pc-header .pc-avatar {
+    width: 42px;
+    height: 42px;
+  }
+  .pc-postActions {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .modal-box {
+    padding: 16px;
+  }
+}
